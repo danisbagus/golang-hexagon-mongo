@@ -1,7 +1,7 @@
 package model
 
 type Product struct {
-	ID         uint64
+	ID         string
 	Name       string
 	CategoryID uint64
 	Price      uint64

@@ -6,15 +6,19 @@ import (
 
 	"github.com/danisbagus/golang-hexagon-mongo/core/model"
 	port "github.com/danisbagus/golang-hexagon-mongo/core/port/product"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+var collectionName = "products"
+
 type Repository struct {
-	db *mongo.Database
+	coll *mongo.Collection
 }
 
 type Product struct {
-	ID         uint64 `bson:"_id,omitempty"`
+	ID         string `bson:"_id,omitempty"`
 	Name       string `bson:"name"`
 	CategoryID uint64 `bson:"category_id"`
 	Price      uint64 `bson:"price"`
@@ -22,14 +26,14 @@ type Product struct {
 
 func New(db *mongo.Database) port.Repository {
 	return &Repository{
-		db: db,
+		coll: db.Collection(collectionName),
 	}
 }
 
 func (r Repository) Insert(inData *model.Product) error {
-	product := toProdoct(inData)
+	product := toProduct(inData)
 
-	res, err := r.db.Collection("products").InsertOne(context.Background(), product)
+	res, err := r.coll.InsertOne(context.Background(), product)
 	if err != nil {
 		return fmt.Errorf("failed insert product: %v", err.Error())
 	}
@@ -41,11 +45,28 @@ func (r Repository) Insert(inData *model.Product) error {
 	return nil
 }
 
-func (r Repository) FindOneByID(ID uint64) (*model.Product, error) {
-	return nil, nil
+func (r Repository) FindOneByID(ID string) (*model.Product, error) {
+	oid, err := primitive.ObjectIDFromHex(ID)
+	if err != nil {
+		return nil, fmt.Errorf("failed convert object id: %v", err.Error())
+	}
+
+	product := new(Product)
+	filter := bson.M{"_id": oid}
+	res := r.coll.FindOne(context.Background(), filter)
+	if err := res.Decode(product); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, fmt.Errorf("failed get product: data not found")
+
+		}
+		return nil, fmt.Errorf("failed get product: %v", err.Error())
+	}
+
+	productOut := toProductOut(product)
+	return productOut, nil
 }
 
-func toProdoct(inData *model.Product) *Product {
+func toProduct(inData *model.Product) *Product {
 	product := new(Product)
 	product.ID = inData.ID
 	product.Name = inData.Name

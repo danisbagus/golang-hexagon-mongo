@@ -33,4 +33,5 @@ func API(route *echo.Group) {
 
 	productkRoute := route.Group("/product")
 	productkRoute.POST("", productHandler.Insert)
+	productkRoute.GET("/:id", productHandler.View)
 }

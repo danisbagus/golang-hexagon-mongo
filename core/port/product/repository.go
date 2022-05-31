@@ -7,5 +7,5 @@ type Repository interface {
 	Insert(product *model.Product) error
 
 	// Find one
-	FindOneByID(ID uint64) (*model.Product, error)
+	FindOneByID(ID string) (*model.Product, error)
 }

@@ -7,5 +7,5 @@ type Service interface {
 	Insert(form *model.Product) error
 
 	// View
-	View(ID uint64) (*model.Product, error)
+	View(ID string) (*model.Product, error)
 }

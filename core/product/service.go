@@ -1,8 +1,6 @@
 package product
 
 import (
-	"errors"
-
 	"github.com/danisbagus/golang-hexagon-mongo/core/model"
 	port "github.com/danisbagus/golang-hexagon-mongo/core/port/product"
 	portTransactor "github.com/danisbagus/golang-hexagon-mongo/core/port/transactor"
@@ -23,15 +21,10 @@ func (s Service) Insert(form *model.Product) error {
 	return s.repo.Insert(form)
 }
 
-func (s Service) View(ID uint64) (*model.Product, error) {
+func (s Service) View(ID string) (*model.Product, error) {
 	product, err := s.repo.FindOneByID(ID)
-	if err == nil {
+	if err != nil {
 		return nil, err
 	}
-
-	if product.ID == 0 {
-		return nil, errors.New("product not found")
-	}
-
 	return product, nil
 }

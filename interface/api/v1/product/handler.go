@@ -8,8 +8,6 @@ import (
 	"github.com/danisbagus/golang-hexagon-mongo/interface/api/v1/product/request"
 	"github.com/danisbagus/golang-hexagon-mongo/interface/api/v1/product/response"
 
-	"github.com/danisbagus/golang-hexagon-mongo/utils/helper"
-
 	"github.com/labstack/echo/v4"
 )
 
@@ -44,7 +42,7 @@ func (h Handler) Insert(c echo.Context) error {
 }
 
 func (h Handler) View(c echo.Context) error {
-	productID := helper.StringToUint64(c.Param("id"), 0)
+	productID := c.Param("id")
 	product, err := h.service.View(productID)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
