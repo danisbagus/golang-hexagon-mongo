@@ -17,6 +17,6 @@ func New(client *mongo.Client) port.Repository {
 	}
 }
 
-func (r *Repository) Ping() error {
+func (r Repository) Ping() error {
 	return r.client.Ping(context.Background(), nil)
 }
