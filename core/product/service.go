@@ -21,6 +21,14 @@ func (s Service) Insert(form *model.Product) error {
 	return s.repo.Insert(form)
 }
 
+func (s Service) List() ([]model.Product, error) {
+	products, err := s.repo.FindAll()
+	if err != nil {
+		return nil, err
+	}
+	return products, nil
+}
+
 func (s Service) View(ID string) (*model.Product, error) {
 	product, err := s.repo.FindOneByID(ID)
 	if err != nil {

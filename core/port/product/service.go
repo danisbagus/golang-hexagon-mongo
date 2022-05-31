@@ -6,6 +6,9 @@ type Service interface {
 	// Insert
 	Insert(form *model.Product) error
 
+	// List
+	List() ([]model.Product, error)
+
 	// View
 	View(ID string) (*model.Product, error)
 }

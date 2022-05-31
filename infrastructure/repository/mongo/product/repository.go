@@ -31,11 +31,11 @@ func New(db *mongo.Database) port.Repository {
 }
 
 func (r Repository) Insert(inData *model.Product) error {
-	product := toProduct(inData)
+	product := newProduct(inData)
 
 	res, err := r.coll.InsertOne(context.Background(), product)
 	if err != nil {
-		return fmt.Errorf("failed insert product: %v", err.Error())
+		return fmt.Errorf("failed insert product: %v", err)
 	}
 
 	if res.InsertedID == "" {
@@ -45,10 +45,38 @@ func (r Repository) Insert(inData *model.Product) error {
 	return nil
 }
 
+func (r Repository) FindAll() ([]model.Product, error) {
+	products := make([]Product, 0)
+	productsOut := make([]model.Product, 0)
+	filter := bson.M{}
+
+	cursor, err := r.coll.Find(context.Background(), filter)
+	if err != nil {
+		return nil, fmt.Errorf("failed get list product: %v", err)
+	}
+
+	err = cursor.All(context.Background(), &products)
+	if err != nil {
+		return nil, fmt.Errorf("failed read all cursor: %v", err)
+	}
+
+	for _, product := range products {
+		var productOut model.Product
+		productOut.ID = product.ID
+		productOut.Name = product.Name
+		productOut.CategoryID = product.CategoryID
+		productOut.Price = product.Price
+
+		productsOut = append(productsOut, productOut)
+	}
+
+	return productsOut, nil
+}
+
 func (r Repository) FindOneByID(ID string) (*model.Product, error) {
 	oid, err := primitive.ObjectIDFromHex(ID)
 	if err != nil {
-		return nil, fmt.Errorf("failed convert object id: %v", err.Error())
+		return nil, fmt.Errorf("failed convert object id: %v", err)
 	}
 
 	product := new(Product)
@@ -59,14 +87,14 @@ func (r Repository) FindOneByID(ID string) (*model.Product, error) {
 			return nil, fmt.Errorf("failed get product: data not found")
 
 		}
-		return nil, fmt.Errorf("failed get product: %v", err.Error())
+		return nil, fmt.Errorf("failed get product: %v", err)
 	}
 
-	productOut := toProductOut(product)
+	productOut := newProductOut(product)
 	return productOut, nil
 }
 
-func toProduct(inData *model.Product) *Product {
+func newProduct(inData *model.Product) *Product {
 	product := new(Product)
 	product.ID = inData.ID
 	product.Name = inData.Name
@@ -75,7 +103,7 @@ func toProduct(inData *model.Product) *Product {
 	return product
 }
 
-func toProductOut(product *Product) *model.Product {
+func newProductOut(product *Product) *model.Product {
 	outData := new(model.Product)
 	outData.ID = product.ID
 	outData.Name = product.Name

@@ -41,6 +41,15 @@ func (h Handler) Insert(c echo.Context) error {
 	return c.JSON(http.StatusOK, response)
 }
 
+func (h Handler) List(c echo.Context) error {
+	products, err := h.service.List()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	resData := response.NewListResponse(products, "Successfully get data")
+	return c.JSON(http.StatusOK, resData)
+}
+
 func (h Handler) View(c echo.Context) error {
 	productID := c.Param("id")
 	product, err := h.service.View(productID)
