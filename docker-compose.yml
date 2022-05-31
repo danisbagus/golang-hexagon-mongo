@@ -1,0 +1,36 @@
+version: "3.1"
+services:
+  mongo:
+    image: mongo
+    restart: always
+    volumes:
+      - mongodata-golang-hexagon-mongo:/data/db
+      - ./initdb:/docker-entrypoint-initdb.d  
+    container_name: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=12345
+    ports:
+      - "127.0.0.1:27017:27017"
+    networks:
+      - golang-hexagon-mongo-net
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 5081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: 12345
+      ME_CONFIG_MONGODB_URL: mongodb://root:danisbagus@mongo:27017/
+    networks:
+      - golang-hexagon-mongo-net
+
+volumes:
+    mongodata-golang-hexagon-mongo:
+     driver: local
+
+networks:
+    golang-hexagon-mongo-net:
+     driver: bridge
