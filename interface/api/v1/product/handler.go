@@ -59,3 +59,24 @@ func (h Handler) View(c echo.Context) error {
 	resData := response.NewViewReponse(product, "Successfully get data")
 	return c.JSON(http.StatusOK, resData)
 }
+
+func (h Handler) Update(c echo.Context) error {
+	reqData := new(request.UpdateRequest)
+	if err := c.Bind(reqData); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	form := new(model.Product)
+	form.ID = c.Param("id")
+	form.Name = reqData.Name
+	form.CategoryID = reqData.CategoryID
+	form.Price = reqData.Price
+
+	err := h.service.Update(form)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	response := map[string]interface{}{"message": "Successfully update data"}
+	return c.JSON(http.StatusOK, response)
+}

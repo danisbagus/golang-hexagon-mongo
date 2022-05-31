@@ -1,6 +1,8 @@
 package product
 
 import (
+	"fmt"
+
 	"github.com/danisbagus/golang-hexagon-mongo/core/model"
 	port "github.com/danisbagus/golang-hexagon-mongo/core/port/product"
 	portTransactor "github.com/danisbagus/golang-hexagon-mongo/core/port/transactor"
@@ -35,4 +37,21 @@ func (s Service) View(ID string) (*model.Product, error) {
 		return nil, err
 	}
 	return product, nil
+}
+
+func (s Service) Update(form *model.Product) error {
+	product, err := s.repo.FindOneByID(form.ID)
+	if err != nil {
+		return err
+	}
+	if product.ID == "" {
+		return fmt.Errorf("product not found")
+	}
+
+	err = s.repo.Update(form)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

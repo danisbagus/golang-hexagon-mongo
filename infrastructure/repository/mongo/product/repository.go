@@ -18,10 +18,10 @@ type Repository struct {
 }
 
 type Product struct {
-	ID         string `bson:"_id,omitempty"`
-	Name       string `bson:"name"`
-	CategoryID uint64 `bson:"category_id"`
-	Price      uint64 `bson:"price"`
+	ID         primitive.ObjectID `json:"-" bson:"_id,omitempty"`
+	Name       string             `json:"name" bson:"name"`
+	CategoryID uint64             `json:"category_id" bson:"category_id"`
+	Price      uint64             `json:"price" bson:"price"`
 }
 
 func New(db *mongo.Database) port.Repository {
@@ -62,7 +62,7 @@ func (r Repository) FindAll() ([]model.Product, error) {
 
 	for _, product := range products {
 		var productOut model.Product
-		productOut.ID = product.ID
+		productOut.ID = product.ID.Hex()
 		productOut.Name = product.Name
 		productOut.CategoryID = product.CategoryID
 		productOut.Price = product.Price
@@ -94,9 +94,31 @@ func (r Repository) FindOneByID(ID string) (*model.Product, error) {
 	return productOut, nil
 }
 
+func (r Repository) Update(inData *model.Product) error {
+	oid, err := primitive.ObjectIDFromHex(inData.ID)
+	if err != nil {
+		return fmt.Errorf("failed convert object id: %v", err)
+	}
+
+	product := newProduct(inData)
+	filter := bson.M{"_id": oid}
+
+	result, err := r.coll.UpdateOne(context.Background(), filter, bson.M{"$set": product})
+	if err != nil {
+		return fmt.Errorf("failed update product: %v", err)
+	}
+
+	if result.ModifiedCount < 1 {
+		return fmt.Errorf("failed update product: no data was updated")
+	}
+
+	return nil
+}
+
 func newProduct(inData *model.Product) *Product {
 	product := new(Product)
-	product.ID = inData.ID
+	oid, _ := primitive.ObjectIDFromHex(inData.ID)
+	product.ID = oid
 	product.Name = inData.Name
 	product.CategoryID = inData.CategoryID
 	product.Price = inData.Price
@@ -105,7 +127,7 @@ func newProduct(inData *model.Product) *Product {
 
 func newProductOut(product *Product) *model.Product {
 	outData := new(model.Product)
-	outData.ID = product.ID
+	outData.ID = product.ID.Hex()
 	outData.Name = product.Name
 	outData.CategoryID = product.CategoryID
 	outData.Price = product.Price

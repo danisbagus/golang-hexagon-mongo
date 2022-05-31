@@ -11,4 +11,7 @@ type Repository interface {
 
 	// Find one
 	FindOneByID(ID string) (*model.Product, error)
+
+	// Update
+	Update(product *model.Product) error
 }
