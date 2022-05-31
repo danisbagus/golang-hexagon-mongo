@@ -115,6 +115,25 @@ func (r Repository) Update(inData *model.Product) error {
 	return nil
 }
 
+func (r Repository) Delete(ID string) error {
+	oid, err := primitive.ObjectIDFromHex(ID)
+	if err != nil {
+		return fmt.Errorf("failed convert object id: %v", err)
+	}
+
+	res, err := r.coll.DeleteOne(context.Background(), bson.M{"_id": oid})
+	if err != nil {
+		return fmt.Errorf("failed delete product: %v", err)
+	}
+
+	if res.DeletedCount < 1 {
+		return fmt.Errorf("failed delete product: no data was deleted")
+	}
+
+	return nil
+
+}
+
 func newProduct(inData *model.Product) *Product {
 	product := new(Product)
 	oid, _ := primitive.ObjectIDFromHex(inData.ID)

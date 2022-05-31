@@ -48,10 +48,17 @@ func (s Service) Update(form *model.Product) error {
 		return fmt.Errorf("product not found")
 	}
 
-	err = s.repo.Update(form)
+	return s.repo.Update(form)
+}
+
+func (s Service) Delete(ID string) error {
+	product, err := s.repo.FindOneByID(ID)
 	if err != nil {
 		return err
 	}
+	if product.ID == "" {
+		return fmt.Errorf("product not found")
+	}
 
-	return nil
+	return s.repo.Delete(ID)
 }

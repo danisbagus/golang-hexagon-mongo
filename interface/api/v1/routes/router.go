@@ -36,4 +36,5 @@ func API(route *echo.Group) {
 	productkRoute.GET("", productHandler.List)
 	productkRoute.GET("/:id", productHandler.View)
 	productkRoute.PUT("/:id", productHandler.Update)
+	productkRoute.DELETE("/:id", productHandler.Delete)
 }

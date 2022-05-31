@@ -80,3 +80,14 @@ func (h Handler) Update(c echo.Context) error {
 	response := map[string]interface{}{"message": "Successfully update data"}
 	return c.JSON(http.StatusOK, response)
 }
+
+func (h Handler) Delete(c echo.Context) error {
+	productID := c.Param("id")
+	err := h.service.Delete(productID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	response := map[string]interface{}{"message": "Successfully delete data"}
+	return c.JSON(http.StatusOK, response)
+}

@@ -14,4 +14,7 @@ type Service interface {
 
 	// Update
 	Update(product *model.Product) error
+
+	// Delete
+	Delete(ID string) error
 }
