@@ -18,10 +18,10 @@ type Repository struct {
 }
 
 type Product struct {
-	ID         primitive.ObjectID `json:"-" bson:"_id,omitempty"`
-	Name       string             `json:"name" bson:"name"`
-	CategoryID uint64             `json:"category_id" bson:"category_id"`
-	Price      uint64             `json:"price" bson:"price"`
+	ID          primitive.ObjectID `json:"-" bson:"_id,omitempty"`
+	Name        string             `json:"name" bson:"name"`
+	CategoryIDs []uint64           `json:"category_ids" bson:"category_ids"`
+	Price       uint64             `json:"price" bson:"price"`
 }
 
 func New(db *mongo.Database) port.Repository {
@@ -64,7 +64,7 @@ func (r Repository) FindAll() ([]model.Product, error) {
 		var productOut model.Product
 		productOut.ID = product.ID.Hex()
 		productOut.Name = product.Name
-		productOut.CategoryID = product.CategoryID
+		productOut.CategoryIDs = product.CategoryIDs
 		productOut.Price = product.Price
 
 		productsOut = append(productsOut, productOut)
@@ -139,7 +139,7 @@ func newProduct(inData *model.Product) *Product {
 	oid, _ := primitive.ObjectIDFromHex(inData.ID)
 	product.ID = oid
 	product.Name = inData.Name
-	product.CategoryID = inData.CategoryID
+	product.CategoryIDs = inData.CategoryIDs
 	product.Price = inData.Price
 	return product
 }
@@ -148,7 +148,7 @@ func newProductOut(product *Product) *model.Product {
 	outData := new(model.Product)
 	outData.ID = product.ID.Hex()
 	outData.Name = product.Name
-	outData.CategoryID = product.CategoryID
+	outData.CategoryIDs = product.CategoryIDs
 	outData.Price = product.Price
 	return outData
 }

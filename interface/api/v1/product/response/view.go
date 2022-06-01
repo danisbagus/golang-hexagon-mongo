@@ -5,17 +5,23 @@ import (
 )
 
 type ViewReponse struct {
-	ID         string `json:"id"`
-	Name       string `json:"name"`
-	CategoryID uint64 `json:"category_id"`
-	Price      uint64 `json:"price"`
+	ID          string     `json:"id"`
+	Name        string     `json:"name"`
+	CategoryIDs []uint64   `json:"category_ids"`
+	Price       uint64     `json:"price"`
+	Categories  []Category `json:"categories"`
+}
+
+type Category struct {
+	CategoryID uint64
+	Name       string
 }
 
 func NewViewReponse(product *model.Product, message string) interface{} {
 	data := new(ViewReponse)
 	data.ID = product.ID
 	data.Name = product.Name
-	data.CategoryID = product.CategoryID
+	data.CategoryIDs = product.CategoryIDs
 	data.Price = product.Price
 
 	response := map[string]interface{}{

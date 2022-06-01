@@ -5,10 +5,10 @@ import (
 )
 
 type ListReponse struct {
-	ID         string `json:"id"`
-	Name       string `json:"name"`
-	CategoryID uint64 `json:"category_id"`
-	Price      uint64 `json:"price"`
+	ID          string   `json:"id"`
+	Name        string   `json:"name"`
+	CategoryIDs []uint64 `json:"category_ids"`
+	Price       uint64   `json:"price"`
 }
 
 func NewListResponse(products []model.Product, message string) interface{} {
@@ -18,7 +18,7 @@ func NewListResponse(products []model.Product, message string) interface{} {
 		var data ListReponse
 		data.ID = product.ID
 		data.Name = product.Name
-		data.CategoryID = product.CategoryID
+		data.CategoryIDs = product.CategoryIDs
 		data.Price = product.Price
 
 		listData = append(listData, data)

@@ -1,7 +1,7 @@
 package request
 
 type UpdateRequest struct {
-	Name       string `json:"name"`
-	CategoryID uint64 `json:"category_id"`
-	Price      uint64 `json:"price"`
+	Name        string   `json:"name"`
+	CategoryIDs []uint64 `json:"category_ids"`
+	Price       uint64   `json:"price"`
 }

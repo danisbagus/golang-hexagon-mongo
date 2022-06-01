@@ -29,7 +29,7 @@ func (h Handler) Insert(c echo.Context) error {
 
 	form := new(model.Product)
 	form.Name = reqData.Name
-	form.CategoryID = reqData.CategoryID
+	form.CategoryIDs = reqData.CategoryIDs
 	form.Price = reqData.Price
 
 	err := h.service.Insert(form)
@@ -69,7 +69,7 @@ func (h Handler) Update(c echo.Context) error {
 	form := new(model.Product)
 	form.ID = c.Param("id")
 	form.Name = reqData.Name
-	form.CategoryID = reqData.CategoryID
+	form.CategoryIDs = reqData.CategoryIDs
 	form.Price = reqData.Price
 
 	err := h.service.Update(form)
