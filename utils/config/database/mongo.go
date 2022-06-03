@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	"go.mongodb.org/mongo-driver/event"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -82,7 +83,13 @@ func NewClient(mongoConfig *MongoConfig) (*mongo.Client, error) {
 		mongoConfig.Port,
 	)
 
-	mongoOptions := options.Client().ApplyURI(url)
+	monitor := &event.CommandMonitor{
+		Started: func(_ context.Context, evt *event.CommandStartedEvent) {
+			log.Println(evt.Command)
+		},
+	}
+
+	mongoOptions := options.Client().ApplyURI(url).SetMonitor(monitor)
 
 	client, err := mongo.NewClient(mongoOptions)
 	if err != nil {
