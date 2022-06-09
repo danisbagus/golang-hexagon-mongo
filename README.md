@@ -12,7 +12,7 @@ simple app use hexagon architecture and mongo db
 Create MongoDB container
 
 ```bash
-docker-compose up
+./startdb.sh
 ```
 
 ## Run the service

@@ -22,23 +22,14 @@ type MongoConfig struct {
 	Password string
 	DBName   string
 	Port     int
-	Url      string
 }
 
 func LoadMongoConfig() *MongoConfig {
 	userName := "root"
 	password := "pwd123"
 	host := "localhost"
-	port := 8800
+	port := 37017
 	dbName := "simple-prodoct-management"
-
-	url := fmt.Sprintf(
-		"mongodb://%s:%s@%s:%d",
-		userName,
-		password,
-		host,
-		port,
-	)
 
 	mongoConfig := &MongoConfig{
 		User:     userName,
@@ -46,11 +37,9 @@ func LoadMongoConfig() *MongoConfig {
 		Host:     host,
 		Port:     port,
 		DBName:   dbName,
-		Url:      url,
 	}
 
 	return mongoConfig
-
 }
 
 func OpenMongoConnection() {
@@ -75,13 +64,15 @@ func NewClient(mongoConfig *MongoConfig) (*mongo.Client, error) {
 		return MongoClient, nil
 	}
 
-	url := fmt.Sprintf(
-		"mongodb://%s:%s@%s:%d",
-		mongoConfig.User,
-		mongoConfig.Password,
-		mongoConfig.Host,
-		mongoConfig.Port,
-	)
+	// url := fmt.Sprintf(
+	// 	"mongodb://%s:%s@%s:%d",
+	// 	mongoConfig.User,
+	// 	mongoConfig.Password,
+	// 	mongoConfig.Host,
+	// 	mongoConfig.Port,
+	// )
+
+	url := fmt.Sprintf("mongodb://%s:%d", mongoConfig.Host, mongoConfig.Port)
 
 	monitor := &event.CommandMonitor{
 		Started: func(_ context.Context, evt *event.CommandStartedEvent) {
@@ -89,7 +80,8 @@ func NewClient(mongoConfig *MongoConfig) (*mongo.Client, error) {
 		},
 	}
 
-	mongoOptions := options.Client().ApplyURI(url).SetMonitor(monitor)
+	// uri := "mongodb://user:password@host/?directConnection=true"
+	mongoOptions := options.Client().ApplyURI(url).SetMonitor(monitor).SetDirect(true)
 
 	client, err := mongo.NewClient(mongoOptions)
 	if err != nil {
