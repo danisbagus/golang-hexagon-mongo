@@ -1,6 +1,8 @@
 package routes
 
 import (
+	transactorRepository "github.com/danisbagus/golang-hexagon-mongo/infrastructure/repository/mongo/transactor"
+
 	healtCheckRepository "github.com/danisbagus/golang-hexagon-mongo/infrastructure/repository/mongo/healtchCheck"
 	productRepository "github.com/danisbagus/golang-hexagon-mongo/infrastructure/repository/mongo/product"
 
@@ -19,11 +21,13 @@ func API(route *echo.Group) {
 	mongoClient := database.MongoClient
 	mongoDB := database.MongoDatabase
 
+	transactorRepository := transactorRepository.New(mongoClient)
+
 	healthCheckRepository := healtCheckRepository.New(mongoClient)
-	productRepository := productRepository.New(mongoDB)
+	productRepository := productRepository.New(mongoDB, mongoClient)
 
 	healtCheckService := healtCheckService.New(healthCheckRepository)
-	productService := productService.New(productRepository)
+	productService := productService.New(productRepository, transactorRepository)
 
 	healtCheckHandler := healtCheckHandler.New(healtCheckService)
 	productHandler := productHandler.New(productService)

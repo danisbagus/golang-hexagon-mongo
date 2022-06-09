@@ -1,10 +1,14 @@
 package product
 
-import "github.com/danisbagus/golang-hexagon-mongo/core/model"
+import (
+	"context"
+
+	"github.com/danisbagus/golang-hexagon-mongo/core/model"
+)
 
 type Repository interface {
 	// Insert
-	Insert(product *model.Product) error
+	Insert(ctx context.Context, product *model.Product) error
 
 	// Find all
 	FindAll() ([]model.Product, error)
@@ -13,8 +17,8 @@ type Repository interface {
 	FindOneByID(ID string) (*model.Product, error)
 
 	// Update
-	Update(product *model.Product) error
+	Update(ctx context.Context, product *model.Product) error
 
 	// Delete
-	Delete(ID string) error
+	Delete(ctx context.Context, ID string) error
 }
