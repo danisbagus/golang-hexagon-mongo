@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"sync"
 
 	"github.com/danisbagus/golang-hexagon-mongo/utils/config"
 
@@ -15,9 +16,10 @@ import (
 )
 
 var (
+	mutex            = &sync.Mutex{}
 	mongoClient      *mongo.Client
 	mongoDatabase    *mongo.Database
-	DefaultAtlasOpts = map[string]string{
+	defaultAtlasOpts = map[string]string{
 		"retryWrites": "true",
 		"w":           "majority",
 	}
@@ -46,6 +48,9 @@ func GetDatabase() (*mongo.Database, error) {
 
 func Init(cfg config.MongoDatabaseConfig) {
 
+	mutex.Lock()
+	defer mutex.Unlock()
+
 	if mongoDatabase != nil {
 		return
 	}
@@ -70,7 +75,7 @@ func NewClient(cfg config.MongoDatabaseConfig) (*mongo.Client, error) {
 
 	if cfg.UseSRV {
 		prefix = DNSSeedListPrefix
-		opts = DefaultAtlasOpts
+		opts = defaultAtlasOpts
 		address = cfg.Host
 	}
 
