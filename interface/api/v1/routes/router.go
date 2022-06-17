@@ -12,14 +12,23 @@ import (
 	healtCheckHandler "github.com/danisbagus/golang-hexagon-mongo/interface/api/v1/healthCheck"
 	productHandler "github.com/danisbagus/golang-hexagon-mongo/interface/api/v1/product"
 
-	"github.com/danisbagus/golang-hexagon-mongo/utils/config/database"
+	mongodb "github.com/danisbagus/golang-hexagon-mongo/modules/mongodb"
+
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/gommon/log"
 )
 
 func API(route *echo.Group) {
 
-	mongoClient := database.MongoClient
-	mongoDB := database.MongoDatabase
+	mongoClient, err := mongodb.GetClient()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	mongoDB, err := mongodb.GetDatabase()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	transactorRepository := transactorRepository.New(mongoClient)
 

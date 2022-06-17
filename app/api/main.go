@@ -5,14 +5,20 @@ import (
 
 	v1Router "github.com/danisbagus/golang-hexagon-mongo/interface/api/v1/routes"
 
-	"github.com/danisbagus/golang-hexagon-mongo/utils/config/database"
+	mongodb "github.com/danisbagus/golang-hexagon-mongo/modules/mongodb"
+	"github.com/danisbagus/golang-hexagon-mongo/utils/config"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
 
-	database.OpenMongoConnection()
+	// get app config
+	appConfig := config.GetAPPConfig()
+
+	// init modules
+	mongodb.Init(appConfig.MongoDatabase)
 
 	e := echo.New()
 	e.Pre(middleware.RemoveTrailingSlash())
